@@ -13,8 +13,11 @@ class PriceList implements \ArrayAccess, \Iterator
     /** @var Price[] */
     protected $prices = [];
 
-    /** @var int  */
+    /** @var int */
     protected $iCounter = 0;
+
+    /** @var float */
+    protected $discount = 0.0;
 
     public function __construct($defaultVatPercent, ICalcLogic $compLogic = null)
     {
@@ -91,15 +94,18 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return float
      */
-    public function getTotalVat(){
+    public function getTotalVat()
+    {
         return $this->getTotalWithVat() - $this->getTotalWithoutVat();
     }
 
-    public function getTotalWithVatRounded($precision = 0){
+    public function getTotalWithVatRounded($precision = 0)
+    {
         return round($this->getTotalWithVat(), $precision);
     }
 
-    public function getRounding($precision = 0){
+    public function getRounding($precision = 0)
+    {
         return round($this->getTotalWithVatRounded($precision) - $this->getTotalWithVat(), 4);
     }
 
@@ -126,6 +132,12 @@ class PriceList implements \ArrayAccess, \Iterator
                 $percents[] = $price->getVatPercent();
         }
         return $percents;
+    }
+
+    public function setDiscount($amount)
+    {
+        $this->discount = $amount;
+        return $this;
     }
 
     public function offsetSet($offset, $value)

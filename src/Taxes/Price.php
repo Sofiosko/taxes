@@ -18,6 +18,9 @@ class Price
     /** @var float */
     public $quantity = 1.0;
 
+    /** @var float */
+    public $discount = 0.0;
+
     /** @var ICalcLogic */
     protected $calcLogic;
 
@@ -139,5 +142,11 @@ class Price
     public static function calculateVatRatio($vatPercent)
     {
         return round((100 + $vatPercent) / 100, 4);
+    }
+
+    public function setDiscount($amount)
+    {
+        $this->discount = $amount;
+        return $this;
     }
 }
