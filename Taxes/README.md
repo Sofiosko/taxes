@@ -1,1 +1,0 @@
-The whole library purpose is to simplify working with Czech VAT while it allows to extend and bend computing logic of every important operation.
