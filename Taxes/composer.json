@@ -1,0 +1,22 @@
+{
+  "name": "biteit/taxes",
+  "description": "Library for working with Czech taxes",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.1",
+    "ext-http": "*",
+    "ext-json": "*"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marek Konderla",
+      "email": "mar.konderla@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "Taxes": "src/"
+    }
+  }
+}
