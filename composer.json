@@ -13,8 +13,6 @@
     }
   ],
   "autoload": {
-    "psr-0": {
-      "Taxes": "src/"
-    }
+    "classmap": ["src/"]
   }
 }
