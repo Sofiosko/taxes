@@ -1,5 +1,5 @@
 {
-  "name": "biteit/taxes",
+  "name": "biteit-dev/taxes",
   "description": "Library for working with Czech taxes",
   "minimum-stability": "dev",
   "require": {
