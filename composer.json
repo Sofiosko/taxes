@@ -3,9 +3,7 @@
   "description": "Library for working with Czech taxes",
   "minimum-stability": "dev",
   "require": {
-    "php": ">=7.1",
-    "ext-http": "*",
-    "ext-json": "*"
+    "php": ">=7.1"
   },
   "license": "MIT",
   "authors": [
