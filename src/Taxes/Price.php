@@ -24,6 +24,12 @@ class Price
     /** @var ICalcLogic */
     protected $calcLogic;
 
+    /** @var float */
+    protected $originalPriceWithVat;
+
+    /** @var float */
+    protected $originalPriceWithoutVat;
+
     /**
      * Price constructor.
      * @param ICalcLogic $compLogic
@@ -42,6 +48,9 @@ class Price
         $this->vatPercent = $vatPercent;
         $this->quantity = $quantity;
         $this->calcLogic = $compLogic;
+
+        $this->originalPriceWithoutVat = $priceWithoutVat;
+        $this->originalPriceWithVat = $priceWithVat;
     }
 
     /**
@@ -91,6 +100,7 @@ class Price
     {
         if (!isset($this->priceWithVat)) {
             $this->priceWithVat = $this->calcLogic->getUnitPriceWithVatFromPriceObject($this);
+            $this->originalPriceWithVat = $this->priceWithVat;
         }
         return $this->priceWithVat;
     }
@@ -102,6 +112,7 @@ class Price
     {
         if (!isset($this->priceWithoutVat)) {
             $this->priceWithoutVat = $this->calcLogic->getUnitPriceWithoutVatFromPriceObject($this);
+            $this->originalPriceWithoutVat = $this->priceWithoutVat;
         }
         return $this->priceWithoutVat;
     }
