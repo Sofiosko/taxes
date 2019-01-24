@@ -18,8 +18,8 @@ class Price
     /** @var float */
     public $quantity = 1.0;
 
-    /** @var float */
-    public $discount = 0.0;
+    /** @var Discount|null */
+    public $discount = null;
 
     /** @var ICalcLogic */
     protected $calcLogic;
@@ -144,9 +144,31 @@ class Price
         return round((100 + $vatPercent) / 100, 4);
     }
 
-    public function setDiscount($amount)
+    /**
+     * @param $amount
+     * @param null $vatPercent
+     * @return $this
+     */
+    public function setDiscount($amount, $vatPercent = null)
     {
-        $this->discount = $amount;
+        $this->discount = new Discount($amount, $vatPercent);
+        if($this->discount->getAmountWithVat() > $this->getTotalPriceWithVat()){
+            throw new \InvalidArgumentException('Discount cannot be higher than total price');
+        }
         return $this;
+    }
+
+    /**
+     * @return Discount|null
+     */
+    public function getDiscount(){
+        return $this->discount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDiscount(){
+        return $this->discount instanceof Discount;
     }
 }

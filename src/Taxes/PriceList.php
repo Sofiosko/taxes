@@ -16,8 +16,8 @@ class PriceList implements \ArrayAccess, \Iterator
     /** @var int */
     protected $iCounter = 0;
 
-    /** @var float */
-    protected $discount = 0.0;
+    /** @var Discount */
+    protected $discount = null;
 
     public function __construct($defaultVatPercent, ICalcLogic $compLogic = null)
     {
@@ -134,12 +134,38 @@ class PriceList implements \ArrayAccess, \Iterator
         return $percents;
     }
 
-    public function setDiscount($amount)
+    /**
+     * @param $amount
+     * @param null $vatPercent
+     * @return $this
+     */
+    public function setDiscount($amount, $vatPercent = null)
     {
-        $this->discount = $amount;
+        $this->discount = new Discount($amount, $vatPercent);
+        if($this->discount->getAmountWithVat() > $this->getTotalWithVat()){
+            throw new \InvalidArgumentException('Discount cannot be higher than total price');
+        }
         return $this;
     }
 
+    /**
+     * @return Discount|null
+     */
+    public function getDiscount(){
+        return $this->discount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDiscount(){
+        return $this->discount instanceof Discount;
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
