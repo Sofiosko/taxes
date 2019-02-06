@@ -46,6 +46,25 @@ class Totals
             <tr>
                 <td colspan="4">&nbsp;</td>
             </tr>
+            <?php
+            if($this->list->hasDiscount()){
+                ?>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><strong>Before discount:</strong></td>
+                    <td><?php echo $this->list->getTotalWithVatWithoutDiscount() ?></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><strong>Discount:</strong></td>
+                    <td><?php echo $this->list->getDiscount()->getAmount() ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4">&nbsp;</td>
+                </tr>
+                <?php
+            }
+            ?>
             <tr>
                 <td></td>
                 <td><strong>Total VAT</strong></td>

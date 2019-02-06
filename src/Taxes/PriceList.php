@@ -19,6 +19,10 @@ class PriceList implements \ArrayAccess, \Iterator
     /** @var Discount */
     protected $discount = null;
 
+    protected $totalsWithVatBeforeDiscount = [];
+
+    protected $totalsWithoutVatBeforeDiscount = [];
+
     public function __construct($defaultVatPercent, ICalcLogic $compLogic = null)
     {
         $this->defaultVatPercent = $defaultVatPercent;
@@ -109,6 +113,16 @@ class PriceList implements \ArrayAccess, \Iterator
         return round($this->getTotalWithVatRounded($precision) - $this->getTotalWithVat(), 4);
     }
 
+    public function getTotalWithVatWithoutDiscount()
+    {
+        return array_sum($this->totalsWithVatBeforeDiscount);
+    }
+
+    public function getTotalWithoutVatWithoutDiscount()
+    {
+        return array_sum($this->totalsWithoutVatBeforeDiscount);
+    }
+
     /**
      * @return array
      */
@@ -136,30 +150,72 @@ class PriceList implements \ArrayAccess, \Iterator
 
     /**
      * @param $amount
-     * @param null $vatPercent
+     * @param bool $isOnVat
      * @return $this
      */
-    public function setDiscount($amount, $vatPercent = null)
+    public function setDiscount($amount, $isOnVat = true)
     {
-        $this->discount = new Discount($amount, $vatPercent);
-        if($this->discount->getAmountWithVat() > $this->getTotalWithVat()){
+        $this->discount = new Discount($amount, $isOnVat);
+        $priceListTotal = $isOnVat ? $this->getTotalWithVat() : $this->getTotalWithoutVat();
+        if ($this->discount->getAmount() > $priceListTotal) {
             throw new \InvalidArgumentException('Discount cannot be higher than total price');
         }
+
+        $this->totalsWithVatBeforeDiscount = $this->getTotalsWithVat();
+        $this->totalsWithoutVatBeforeDiscount = $this->getTotalsWithoutVat();
+
+        /**
+         * Get amount of discount for every vat group
+         */
+        $totalDiscounts = [];
+        $totals = $isOnVat ? $this->getTotalsWithVat() : $this->getTotalsWithoutVat();
+        foreach ($totals as $vatPercent => $total) {
+            $ratioToTotal = round((($total * 100) / $priceListTotal) / 100, 4);
+            $totalDiscounts[$vatPercent] = ($amount * $ratioToTotal);
+        }
+
+        $checkSum = array_sum($totalDiscounts);
+        if ($checkSum < $amount)
+            $totalDiscounts[array_keys($totalDiscounts)[0]] += ($amount - $checkSum);
+
+        foreach ($this->prices as $price) {
+            /**
+             * Calculate amount of discount for unit price proportionaly to total in specific group
+             */
+            $totalPrice = $isOnVat ? $price->getTotalPriceWithVat() : $price->getTotalPriceWithoutVat();
+            $total = $totals[$price->getVatPercent()];
+            $unitRatioToTotal = round((($totalPrice * 100) / $total) / 100, 2);
+
+            $discount = round(($totalDiscounts[$price->getVatPercent()] * $unitRatioToTotal) / $price->getQuantity(), 2);
+
+            $price->setDiscount($discount, $isOnVat);
+        }
+
         return $this;
     }
 
     /**
      * @return Discount|null
      */
-    public function getDiscount(){
+    public function getDiscount()
+    {
         return $this->discount;
     }
 
     /**
      * @return bool
      */
-    public function hasDiscount(){
+    public function hasDiscount()
+    {
         return $this->discount instanceof Discount;
+    }
+
+    public function clear()
+    {
+        $this->prices = [];
+        $this->discount = null;
+        $this->iCounter = 0;
+        return $this;
     }
 
     /**
@@ -185,6 +241,10 @@ class PriceList implements \ArrayAccess, \Iterator
         unset($this->prices[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return Price|mixed|null
+     */
     public function offsetGet($offset)
     {
         return isset($this->prices[$offset]) ? $this->prices[$offset] : null;

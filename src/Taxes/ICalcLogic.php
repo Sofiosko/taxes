@@ -63,4 +63,12 @@ interface ICalcLogic
      * @return float
      */
     public function getVatCoefficient($vatPercent);
+
+    /**
+     * Returns false if passed percentage is not allowed
+     *
+     * @param $vatPercent
+     * @return mixed
+     */
+    public function validateVatPercent($vatPercent);
 }

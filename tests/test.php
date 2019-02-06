@@ -23,7 +23,11 @@ $pl->addWithVat(223.3, 3, \BiteIT\Taxes\Rates::MEDIUM_PERCENT);
 $pl->addWithVat(299, 4, \BiteIT\Taxes\Rates::LOW_PERCENT);
 $pl->addWithVat(305.2, 4.5, \BiteIT\Taxes\Rates::LOW_PERCENT);
 
-$pl->setDiscount(100);
+
+// adds item with negative price (discount for specific vat rate)
+//$pl->addWithVat(-100, 1, \BiteIT\Taxes\Rates::HIGH_PERCENT);
+// sets discount for all products proportionately
+$pl->setDiscount(100, true);
 
 
 /**

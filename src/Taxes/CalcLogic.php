@@ -3,7 +3,7 @@
 namespace BiteIT\Taxes;
 
 /**
- * TODO prevent cyclical dependence? Or change price object to specific parameters?
+ * TODO prevent cyclical dependence? Or change price object parameters to specific parameters?
  *
  * Class CalcLogic
  * @package BiteIT\Taxes
@@ -107,5 +107,18 @@ class CalcLogic implements ICalcLogic
     public function getVatCoefficient($vatPercent)
     {
         return round($vatPercent / (100 + $vatPercent), 4);
+    }
+
+    /**
+     * @param $vatPercent
+     * @return bool|mixed
+     */
+    public function validateVatPercent($vatPercent)
+    {
+        return in_array($vatPercent, [
+            Rates::LOW_PERCENT,
+            Rates::MEDIUM_PERCENT,
+            Rates::HIGH_PERCENT
+        ]);
     }
 }

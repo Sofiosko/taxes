@@ -2,8 +2,6 @@
 
 namespace BiteIT\Taxes;
 
-use http\Exception\InvalidArgumentException;
-
 class Price
 {
     /** @var float */
@@ -41,7 +39,10 @@ class Price
     public function __construct(ICalcLogic $compLogic, $vatPercent, $priceWithVat = null, $priceWithoutVat = null, $quantity = 1.0)
     {
         if (!isset($priceWithVat) && !isset($priceWithoutVat))
-            throw new InvalidArgumentException('Please specify at least one price');
+            throw new \InvalidArgumentException('Please specify at least one price');
+
+        if(!$compLogic->validateVatPercent($vatPercent))
+            throw new \InvalidArgumentException($vatPercent.' is not allowed vat rate');
 
         $this->priceWithoutVat = $priceWithoutVat;
         $this->priceWithVat = $priceWithVat;
@@ -100,7 +101,8 @@ class Price
     {
         if (!isset($this->priceWithVat)) {
             $this->priceWithVat = $this->calcLogic->getUnitPriceWithVatFromPriceObject($this);
-            $this->originalPriceWithVat = $this->priceWithVat;
+            if(!isset($this->originalPriceWithVat))
+                $this->originalPriceWithVat = $this->priceWithVat;
         }
         return $this->priceWithVat;
     }
@@ -112,7 +114,8 @@ class Price
     {
         if (!isset($this->priceWithoutVat)) {
             $this->priceWithoutVat = $this->calcLogic->getUnitPriceWithoutVatFromPriceObject($this);
-            $this->originalPriceWithoutVat = $this->priceWithoutVat;
+            if(!isset($this->originalPriceWithoutVat))
+                $this->originalPriceWithoutVat = $this->priceWithoutVat;
         }
         return $this->priceWithoutVat;
     }
@@ -157,29 +160,27 @@ class Price
 
     /**
      * @param $amount
-     * @param null $vatPercent
+     * @param bool $isOnVat
      * @return $this
      */
-    public function setDiscount($amount, $vatPercent = null)
-    {
-        $this->discount = new Discount($amount, $vatPercent);
-        if($this->discount->getAmountWithVat() > $this->getTotalPriceWithVat()){
-            throw new \InvalidArgumentException('Discount cannot be higher than total price');
+    public function setDiscount($amount, $isOnVat = true){
+        if($isOnVat){
+            $discountedPriceWithVat = $this->getUnitPriceWithVat() - $amount;
+            $this->priceWithVat = $discountedPriceWithVat;
+            $this->priceWithoutVat = null;
+        } else {
+            $discountedPriceWithoutVat = $this->getUnitPriceWithoutVat() - $amount;
+            $this->priceWithoutVat = $discountedPriceWithoutVat;
+            $this->priceWithVat = null;
         }
         return $this;
     }
 
-    /**
-     * @return Discount|null
-     */
-    public function getDiscount(){
-        return $this->discount;
+    public function getOriginalPriceWithVat(){
+        return $this->originalPriceWithVat;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasDiscount(){
-        return $this->discount instanceof Discount;
+    public function getOriginalPriceWithoutVat(){
+        return $this->originalPriceWithoutVat;
     }
 }

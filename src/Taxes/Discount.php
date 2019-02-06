@@ -2,23 +2,32 @@
 
 namespace BiteIT\Taxes;
 
-use http\Exception\InvalidArgumentException;
-
+/**
+ * Discount is different then item in price list it only contains info about amount and if it affects directly price with vat or without vat
+ *
+ * If you want to set discount as item in price list you can add item with negative amount
+ *
+ * Class Discount
+ * @package BiteIT\Taxes
+ */
 class Discount
 {
     /** @var float */
     public $amount = 0.0;
 
-    /** @var null|int  */
-    public $vatPercent = null;
+    /** @var bool  */
+    public $isOnVat = true;
 
-    public function __construct($amount, $vatPercent = null)
+//    /** @var null|int  */
+//    public $vatPercent = null;
+
+    public function __construct($amount, $isOnVat = true)
     {
         $this->amount = $amount;
-        $this->vatPercent = $vatPercent;
+        $this->isOnVat = $isOnVat;
     }
 
-    public function getAmountWithVat(){
-        return $this->amount;
+    public function getAmount($precision = 2){
+        return round($this->amount, $precision);
     }
 }
