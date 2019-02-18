@@ -13,6 +13,9 @@ class PriceList implements \ArrayAccess, \Iterator
     /** @var Price[] */
     protected $prices = [];
 
+    /** @var array */
+    protected $pricesMap = [];
+
     /** @var int */
     protected $iCounter = 0;
 
@@ -33,26 +36,44 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param $priceWithVat
      * @param float $quantity
      * @param null $vatPercent
+     * @param null $priceId
      * @return Price
      */
-    public function addWithVat($priceWithVat, $quantity = 1.0, $vatPercent = null)
+    public function addWithVat($priceWithVat, $quantity = 1.0, $vatPercent = null, $priceId = null)
     {
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
-        return $this->prices[] = Price::createFromPriceWithVat($this->calcLogic, $vatPercent, $priceWithVat, $quantity);
+        $this->prices[] = $price = Price::createFromPriceWithVat($this->calcLogic, $vatPercent, $priceWithVat, $quantity);
+        if(isset($priceId))
+            $this->pricesMap[$priceId] = $price;
+        return $price;
     }
 
     /**
      * @param $priceWithoutVat
      * @param float $quantity
      * @param null $vatPercent
+     * @param null $priceId
      * @return Price
      */
-    public function addWithoutVat($priceWithoutVat, $quantity = 1.0, $vatPercent = null)
+    public function addWithoutVat($priceWithoutVat, $quantity = 1.0, $vatPercent = null, $priceId = null)
     {
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
-        return $this->prices[] = Price::createFromPriceWithoutVat($this->calcLogic, $vatPercent, $priceWithoutVat, $quantity);
+        $this->prices[] = $price = Price::createFromPriceWithoutVat($this->calcLogic, $vatPercent, $priceWithoutVat, $quantity);
+        if(isset($priceId))
+            $this->pricesMap[$priceId] = $price;
+        return $price;
+    }
+
+    /**
+     * @param $priceId
+     * @return mixed|null
+     */
+    public function getPriceById($priceId){
+        if(isset($this->pricesMap[$priceId]))
+            return $this->pricesMap[$priceId];
+        return null;
     }
 
     /**
