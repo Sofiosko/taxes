@@ -98,6 +98,10 @@ class CalcLogic implements ICalcLogic
         return $totals;
     }
 
+    public function getTotalVatFromPriceObject(Price $price){
+        return round($price->getTotalPriceWithVat() - $price->getTotalPriceWithoutVat(), 2);
+    }
+
     /**
      * Returns correctly rounded var coefficient
      *

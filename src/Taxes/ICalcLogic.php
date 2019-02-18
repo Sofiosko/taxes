@@ -57,6 +57,14 @@ interface ICalcLogic
     public function getTotalsWithoutVatFromPrices($prices);
 
     /**
+     * Method for calculating amout of vat
+     *
+     * @param Price $price
+     * @return mixed
+     */
+    public function getTotalVatFromPriceObject(Price $price);
+
+    /**
      * Returns correctly rounded var coefficient
      *
      * @param $vatPercent

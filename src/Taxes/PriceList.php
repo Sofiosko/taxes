@@ -44,7 +44,7 @@ class PriceList implements \ArrayAccess, \Iterator
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
         $this->prices[] = $price = Price::createFromPriceWithVat($this->calcLogic, $vatPercent, $priceWithVat, $quantity);
-        if(isset($priceId))
+        if (isset($priceId))
             $this->pricesMap[$priceId] = $price;
         return $price;
     }
@@ -61,17 +61,18 @@ class PriceList implements \ArrayAccess, \Iterator
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
         $this->prices[] = $price = Price::createFromPriceWithoutVat($this->calcLogic, $vatPercent, $priceWithoutVat, $quantity);
-        if(isset($priceId))
+        if (isset($priceId))
             $this->pricesMap[$priceId] = $price;
         return $price;
     }
 
     /**
      * @param $priceId
-     * @return mixed|null
+     * @return Price|null
      */
-    public function getPriceById($priceId){
-        if(isset($this->pricesMap[$priceId]))
+    public function getPriceById($priceId)
+    {
+        if (isset($this->pricesMap[$priceId]))
             return $this->pricesMap[$priceId];
         return null;
     }

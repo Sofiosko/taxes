@@ -94,6 +94,10 @@ class Price
         return $this->calcLogic->getTotalPriceWithoutVatFromPriceObject($this);
     }
 
+    public function getTotalVat(){
+        return $this->calcLogic->getTotalVatFromPriceObject($this);
+    }
+
     /**
      * @return float
      */
