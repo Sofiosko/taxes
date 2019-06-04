@@ -216,6 +216,14 @@ class PriceList implements \ArrayAccess, \Iterator
         return $this;
     }
 
+    public function addDiscountItem($amount, $vatPercent, $discountId, $isWithVat = true){
+        if($isWithVat)
+            $this->addWithVat(-$amount, 1, $vatPercent, $discountId);
+        else
+            $this->addWithoutVat(-$amount, 1, $vatPercent, $discountId);
+        return $this;
+    }
+
     /**
      * @return Discount|null
      */
