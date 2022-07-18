@@ -170,6 +170,11 @@ class PriceList implements \ArrayAccess, \Iterator
         return $percents;
     }
 
+    public function saveDiscounts(){
+        $this->totalsWithVatBeforeDiscount = $this->getTotalsWithVat();
+        $this->totalsWithoutVatBeforeDiscount = $this->getTotalsWithoutVat();
+    }
+
     /**
      * @param $amount
      * @param bool $isOnVat
@@ -217,6 +222,10 @@ class PriceList implements \ArrayAccess, \Iterator
     }
 
     public function addDiscountItem($amount, $vatPercent, $discountId, $isWithVat = true){
+        if(!$this->totalsWithoutVatBeforeDiscount){
+            $this->saveDiscounts();
+        }
+
         if($isWithVat)
             $this->addWithVat(-$amount, 1, $vatPercent, $discountId);
         else
