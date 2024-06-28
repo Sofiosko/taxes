@@ -13,10 +13,10 @@ namespace BiteIT\Taxes;
 class Discount
 {
     /** @var float */
-    public $amount = 0.0;
+    public float $amount = 0.0;
 
     /** @var bool  */
-    public $isOnVat = true;
+    public mixed $isOnVat = true;
 
 //    /** @var null|int  */
 //    public $vatPercent = null;
@@ -27,7 +27,8 @@ class Discount
         $this->isOnVat = $isOnVat;
     }
 
-    public function getAmount($precision = 2){
+    public function getAmount($precision = 2): float
+    {
         return round($this->amount, $precision);
     }
 }

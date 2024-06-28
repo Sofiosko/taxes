@@ -5,28 +5,28 @@ namespace BiteIT\Taxes;
 class Price
 {
     /** @var float */
-    public $priceWithVat;
+    public ?float $priceWithVat;
 
     /** @var float */
-    public $priceWithoutVat;
+    public ?float $priceWithoutVat;
 
     /** @var int */
-    public $vatPercent;
+    public int $vatPercent;
 
     /** @var float */
-    public $quantity = 1.0;
+    public float $quantity = 1.0;
 
     /** @var Discount|null */
-    public $discount = null;
+    public ?Discount $discount = null;
 
     /** @var ICalcLogic */
-    protected $calcLogic;
+    protected ICalcLogic $calcLogic;
 
     /** @var float */
-    protected $originalPriceWithVat;
+    protected ?float $originalPriceWithVat;
 
     /** @var float */
-    protected $originalPriceWithoutVat;
+    protected ?float $originalPriceWithoutVat;
 
     /**
      * Price constructor.
@@ -61,7 +61,7 @@ class Price
      * @param float $quantity
      * @return Price
      */
-    public static function createFromPriceWithVat(ICalcLogic $compLogic, $vatPercent, $priceWithVat, $quantity = 1.0)
+    public static function createFromPriceWithVat(ICalcLogic $compLogic, $vatPercent, $priceWithVat, $quantity = 1.0): Price
     {
         return new static($compLogic, $vatPercent, $priceWithVat, null, $quantity);
     }
@@ -73,7 +73,7 @@ class Price
      * @param float $quantity
      * @return Price
      */
-    public static function createFromPriceWithoutVat(ICalcLogic $compLogic, $vatPercent, $priceWithoutVat, $quantity = 1.0)
+    public static function createFromPriceWithoutVat(ICalcLogic $compLogic, $vatPercent, $priceWithoutVat, $quantity = 1.0): Price
     {
         return new static($compLogic, $vatPercent, null, $priceWithoutVat, $quantity);
     }
@@ -81,7 +81,7 @@ class Price
     /**
      * @return float
      */
-    public function getTotalPriceWithVat()
+    public function getTotalPriceWithVat(): float
     {
         return $this->calcLogic->getTotalPriceWithVatFromPriceObject($this);
     }
@@ -89,7 +89,7 @@ class Price
     /**
      * @return float
      */
-    public function getTotalPriceWithoutVat()
+    public function getTotalPriceWithoutVat(): float
     {
         return $this->calcLogic->getTotalPriceWithoutVatFromPriceObject($this);
     }
@@ -101,7 +101,7 @@ class Price
     /**
      * @return float
      */
-    public function getUnitPriceWithVat()
+    public function getUnitPriceWithVat(): ?float
     {
         if (!isset($this->priceWithVat)) {
             $this->priceWithVat = $this->calcLogic->getUnitPriceWithVatFromPriceObject($this);
@@ -114,7 +114,7 @@ class Price
     /**
      * @return float
      */
-    public function getUnitPriceWithoutVat()
+    public function getUnitPriceWithoutVat(): ?float
     {
         if (!isset($this->priceWithoutVat)) {
             $this->priceWithoutVat = $this->calcLogic->getUnitPriceWithoutVatFromPriceObject($this);
@@ -124,7 +124,7 @@ class Price
         return $this->priceWithoutVat;
     }
 
-    public function getQuantity()
+    public function getQuantity(): float
     {
         return $this->quantity;
     }
@@ -132,7 +132,7 @@ class Price
     /**
      * @return int
      */
-    public function getVatPercent()
+    public function getVatPercent(): int
     {
         return $this->vatPercent;
     }
@@ -140,7 +140,7 @@ class Price
     /**
      * @return float
      */
-    public function getVatCoefficient()
+    public function getVatCoefficient(): float
     {
         return $this->calcLogic->getVatCoefficient($this->getVatPercent());
     }
@@ -148,7 +148,7 @@ class Price
     /**
      * @return float
      */
-    public function getVatRatio()
+    public function getVatRatio(): float
     {
         return static::calculateVatRatio($this->getVatPercent());
     }
@@ -157,7 +157,7 @@ class Price
      * @param $vatPercent
      * @return float
      */
-    public static function calculateVatRatio($vatPercent)
+    public static function calculateVatRatio($vatPercent): float
     {
         return round((100 + $vatPercent) / 100, 4);
     }
@@ -167,7 +167,8 @@ class Price
      * @param bool $isOnVat
      * @return $this
      */
-    public function setDiscount($amount, $isOnVat = true){
+    public function setDiscount($amount, $isOnVat = true): static
+    {
         if($isOnVat){
             $discountedPriceWithVat = $this->getUnitPriceWithVat() - $amount;
             $this->priceWithVat = $discountedPriceWithVat;
@@ -180,11 +181,13 @@ class Price
         return $this;
     }
 
-    public function getOriginalPriceWithVat(){
+    public function getOriginalPriceWithVat(): ?float
+    {
         return $this->originalPriceWithVat;
     }
 
-    public function getOriginalPriceWithoutVat(){
+    public function getOriginalPriceWithoutVat(): ?float
+    {
         return $this->originalPriceWithoutVat;
     }
 }

@@ -5,31 +5,29 @@ namespace BiteIT\Taxes;
 class PriceList implements \ArrayAccess, \Iterator
 {
     /** @var float */
-    protected $defaultVatPercent;
+    protected float $defaultVatPercent;
 
-    /** @var ICalcLogic */
-    protected $calcLogic;
+    protected ICalcLogic|CalcLogic $calcLogic;
 
     /** @var Price[] */
-    protected $prices = [];
+    protected array $prices = [];
 
     /** @var array */
-    protected $pricesMap = [];
+    protected array $pricesMap = [];
 
     /** @var int */
-    protected $iCounter = 0;
+    protected int $iCounter = 0;
 
-    /** @var Discount */
-    protected $discount = null;
+    protected ?Discount $discount = null;
 
-    protected $totalsWithVatBeforeDiscount = [];
+    protected array $totalsWithVatBeforeDiscount = [];
 
-    protected $totalsWithoutVatBeforeDiscount = [];
+    protected array $totalsWithoutVatBeforeDiscount = [];
 
     public function __construct($defaultVatPercent, ICalcLogic $compLogic = null)
     {
         $this->defaultVatPercent = $defaultVatPercent;
-        $this->calcLogic = isset($compLogic) ? $compLogic : new CalcLogic();
+        $this->calcLogic = $compLogic ?? new CalcLogic();
     }
 
     /**
@@ -39,7 +37,7 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param null $priceId
      * @return Price
      */
-    public function addWithVat($priceWithVat, $quantity = 1.0, $vatPercent = null, $priceId = null)
+    public function addWithVat($priceWithVat, float $quantity = 1.0, $vatPercent = null, $priceId = null): Price
     {
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
@@ -56,7 +54,7 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param null $priceId
      * @return Price
      */
-    public function addWithoutVat($priceWithoutVat, $quantity = 1.0, $vatPercent = null, $priceId = null)
+    public function addWithoutVat($priceWithoutVat, float $quantity = 1.0, $vatPercent = null, $priceId = null): Price
     {
         if (!isset($vatPercent))
             $vatPercent = $this->defaultVatPercent;
@@ -70,7 +68,7 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param $priceId
      * @return Price|null
      */
-    public function getPriceById($priceId)
+    public function getPriceById($priceId): ?Price
     {
         if (isset($this->pricesMap[$priceId]))
             return $this->pricesMap[$priceId];
@@ -80,7 +78,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return array
      */
-    public function getTotalsWithVat()
+    public function getTotalsWithVat(): array
     {
         return $this->calcLogic->getTotalsWithVatFromPrices($this->prices);
     }
@@ -88,7 +86,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return array
      */
-    public function getTotalsWithoutVat()
+    public function getTotalsWithoutVat(): array
     {
         return $this->calcLogic->getTotalsWithoutVatFromPrices($this->prices);
     }
@@ -96,7 +94,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return float
      */
-    public function getTotalWithVat()
+    public function getTotalWithVat(): float
     {
         $total = 0.0;
         foreach ($this->getTotalsWithVat() as $price) {
@@ -108,7 +106,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return float
      */
-    public function getTotalWithoutVat()
+    public function getTotalWithoutVat(): float
     {
         $total = 0.0;
         foreach ($this->getTotalsWithoutVat() as $price) {
@@ -120,27 +118,27 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return float
      */
-    public function getTotalVat()
+    public function getTotalVat(): float
     {
         return $this->getTotalWithVat() - $this->getTotalWithoutVat();
     }
 
-    public function getTotalWithVatRounded($precision = 0)
+    public function getTotalWithVatRounded(int $precision = 0): float
     {
         return round($this->getTotalWithVat(), $precision);
     }
 
-    public function getRounding($precision = 0)
+    public function getRounding(int $precision = 0): float
     {
         return round($this->getTotalWithVatRounded($precision) - $this->getTotalWithVat(), 4);
     }
 
-    public function getTotalWithVatWithoutDiscount()
+    public function getTotalWithVatWithoutDiscount(): float|int
     {
         return array_sum($this->totalsWithVatBeforeDiscount);
     }
 
-    public function getTotalWithoutVatWithoutDiscount()
+    public function getTotalWithoutVatWithoutDiscount(): float|int
     {
         return array_sum($this->totalsWithoutVatBeforeDiscount);
     }
@@ -148,7 +146,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return array
      */
-    public function getVatBases()
+    public function getVatBases(): array
     {
         $bases = [];
         foreach ($this->getTotalsWithVat() as $vatPercent => $price) {
@@ -160,7 +158,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return array
      */
-    public function getVatPercents()
+    public function getVatPercents(): array
     {
         $percents = [];
         foreach ($this->prices as $price) {
@@ -175,7 +173,7 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param bool $isOnVat
      * @return $this
      */
-    public function setDiscount($amount, $isOnVat = true)
+    public function setDiscount(float|int $amount, bool $isOnVat = true): static
     {
         $this->discount = new Discount($amount, $isOnVat);
         $priceListTotal = $isOnVat ? $this->getTotalWithVat() : $this->getTotalWithoutVat();
@@ -216,7 +214,8 @@ class PriceList implements \ArrayAccess, \Iterator
         return $this;
     }
 
-    public function addDiscountItem($amount, $vatPercent, $discountId, $isWithVat = true){
+    public function addDiscountItem(float $amount, int|float $vatPercent, int $discountId, bool $isWithVat = true): static
+    {
         if($isWithVat)
             $this->addWithVat(-$amount, 1, $vatPercent, $discountId);
         else
@@ -227,7 +226,7 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return Discount|null
      */
-    public function getDiscount()
+    public function getDiscount(): ?Discount
     {
         return $this->discount;
     }
@@ -235,12 +234,12 @@ class PriceList implements \ArrayAccess, \Iterator
     /**
      * @return bool
      */
-    public function hasDiscount()
+    public function hasDiscount(): bool
     {
         return $this->discount instanceof Discount;
     }
 
-    public function clear()
+    public function clear(): static
     {
         $this->prices = [];
         $this->discount = null;
@@ -252,7 +251,7 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param mixed $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->prices[] = $value;
@@ -261,12 +260,12 @@ class PriceList implements \ArrayAccess, \Iterator
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->prices[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->prices[$offset]);
     }
@@ -275,35 +274,34 @@ class PriceList implements \ArrayAccess, \Iterator
      * @param mixed $offset
      * @return Price|mixed|null
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
-        return isset($this->prices[$offset]) ? $this->prices[$offset] : null;
+        return $this->prices[$offset] ?? null;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->prices);
     }
 
-    public function current()
+    public function current(): mixed
     {
         $var = current($this->prices);
         return $var;
     }
 
-    public function key()
+    public function key(): mixed
     {
         $var = key($this->prices);
         return $var;
     }
 
-    public function next()
+    public function next(): void
     {
-        $var = next($this->prices);
-        return $var;
+        next($this->prices);
     }
 
-    public function valid()
+    public function valid(): bool
     {
         $key = key($this->prices);
         $var = ($key !== NULL && $key !== FALSE);

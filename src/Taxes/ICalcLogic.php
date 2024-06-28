@@ -14,7 +14,7 @@ interface ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getUnitPriceWithVatFromPriceObject(Price $price);
+    public function getUnitPriceWithVatFromPriceObject(Price $price): float|int;
 
     /**
      * Method for calculating price without vat from price with vat
@@ -22,7 +22,7 @@ interface ICalcLogic
      * @param Price $price
      * @return float
      */
-    public function getUnitPriceWithoutVatFromPriceObject(Price $price);
+    public function getUnitPriceWithoutVatFromPriceObject(Price $price): float;
 
     /**
      * Method for calculating total amount with vat from price object
@@ -30,7 +30,7 @@ interface ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getTotalPriceWithVatFromPriceObject(Price $price);
+    public function getTotalPriceWithVatFromPriceObject(Price $price): float|int;
 
     /**
      * Method for calculating total amount without vat from price object
@@ -38,7 +38,7 @@ interface ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getTotalPriceWithoutVatFromPriceObject(Price $price);
+    public function getTotalPriceWithoutVatFromPriceObject(Price $price): float|int;
 
     /**
      * Method for calculating array of totals with vat from prices array
@@ -46,7 +46,7 @@ interface ICalcLogic
      * @param Price[] $prices
      * @return array
      */
-    public function getTotalsWithVatFromPrices($prices);
+    public function getTotalsWithVatFromPrices(array $prices): array;
 
     /**
      * Method for calculating array of totals without vat from prices array
@@ -54,7 +54,7 @@ interface ICalcLogic
      * @param Price[] $prices
      * @return mixed
      */
-    public function getTotalsWithoutVatFromPrices($prices);
+    public function getTotalsWithoutVatFromPrices(array $prices): mixed;
 
     /**
      * Method for calculating amout of vat
@@ -62,7 +62,7 @@ interface ICalcLogic
      * @param Price $price
      * @return mixed
      */
-    public function getTotalVatFromPriceObject(Price $price);
+    public function getTotalVatFromPriceObject(Price $price): mixed;
 
     /**
      * Returns correctly rounded var coefficient
@@ -70,7 +70,7 @@ interface ICalcLogic
      * @param $vatPercent
      * @return float
      */
-    public function getVatCoefficient($vatPercent);
+    public function getVatCoefficient(float|int $vatPercent): float;
 
     /**
      * Returns false if passed percentage is not allowed
@@ -78,5 +78,5 @@ interface ICalcLogic
      * @param $vatPercent
      * @return mixed
      */
-    public function validateVatPercent($vatPercent);
+    public function validateVatPercent(float|int $vatPercent): mixed;
 }

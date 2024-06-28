@@ -16,7 +16,7 @@ class CalcLogic implements ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getUnitPriceWithVatFromPriceObject(Price $price)
+    public function getUnitPriceWithVatFromPriceObject(Price $price): float|int
     {
         return $price->getUnitPriceWithoutVat() * $price->getVatRatio();
     }
@@ -27,7 +27,7 @@ class CalcLogic implements ICalcLogic
      * @param Price $price
      * @return float
      */
-    public function getUnitPriceWithoutVatFromPriceObject(Price $price)
+    public function getUnitPriceWithoutVatFromPriceObject(Price $price): float
     {
         return $price->getUnitPriceWithVat() - round($price->getUnitPriceWithVat() * $price->getVatCoefficient(), 2);
     }
@@ -39,7 +39,7 @@ class CalcLogic implements ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getTotalPriceWithVatFromPriceObject(Price $price)
+    public function getTotalPriceWithVatFromPriceObject(Price $price): float|int
     {
         return $price->getUnitPriceWithVat() * $price->getQuantity();
 //        return round($price->getUnitPriceWithoutVat() * $price->quantity * $price->getVatRatio(), 2);
@@ -51,7 +51,7 @@ class CalcLogic implements ICalcLogic
      * @param Price $price
      * @return float|int
      */
-    public function getTotalPriceWithoutVatFromPriceObject(Price $price)
+    public function getTotalPriceWithoutVatFromPriceObject(Price $price): float|int
     {
         return round($price->getUnitPriceWithoutVat() * $price->quantity, 2);
     }
@@ -63,7 +63,7 @@ class CalcLogic implements ICalcLogic
      * @param Price[] $prices
      * @return array
      */
-    public function getTotalsWithVatFromPrices($prices)
+    public function getTotalsWithVatFromPrices($prices): array
     {
         $totalsWithVat = [];
         foreach ($this->getTotalsWithoutVatFromPrices($prices) as $vatPercent => $totalWithoutVat) {
@@ -87,7 +87,7 @@ class CalcLogic implements ICalcLogic
      * @param Price[] $prices
      * @return mixed
      */
-    public function getTotalsWithoutVatFromPrices($prices)
+    public function getTotalsWithoutVatFromPrices($prices): mixed
     {
         $totals = [];
         foreach ($prices as $price) {
@@ -98,7 +98,8 @@ class CalcLogic implements ICalcLogic
         return $totals;
     }
 
-    public function getTotalVatFromPriceObject(Price $price){
+    public function getTotalVatFromPriceObject(Price $price): mixed
+    {
         return round($price->getTotalPriceWithVat() - $price->getTotalPriceWithoutVat(), 2);
     }
 
@@ -108,7 +109,7 @@ class CalcLogic implements ICalcLogic
      * @param $vatPercent
      * @return float
      */
-    public function getVatCoefficient($vatPercent)
+    public function getVatCoefficient($vatPercent): float
     {
         return round($vatPercent / (100 + $vatPercent), 4);
     }
@@ -117,7 +118,7 @@ class CalcLogic implements ICalcLogic
      * @param $vatPercent
      * @return bool|mixed
      */
-    public function validateVatPercent($vatPercent)
+    public function validateVatPercent($vatPercent): mixed
     {
         return in_array($vatPercent, [
             Rates::LOW_PERCENT,
